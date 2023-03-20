@@ -8,3 +8,6 @@
 *.png
 *.gif
 ./NutrientGridData/*.csv'
+.DS_Store
+.Rdata
+.httr-oauth
