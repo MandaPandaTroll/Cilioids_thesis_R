@@ -36,7 +36,7 @@ gc()
   setwd("./NutrientGridData")
   
   gridList<- lapply(list.files(),read.csv,header = FALSE)
-  setwd("/Users/Amanda/RstudioStuff/Cilioids_thesis/")
+  setwd("/Users/Amanda/RstudioStuff/Cilioids_thesis_R/")
   parameters <- read.csv("params.txt")
   gridDims <- list(as.character(seq(1:parameters$Value[1])),as.character(seq(1:parameters$Value[2])))
   #gridList <- (lapply(list.files(pattern = "gridData*"), read.csv, header = FALSE))
