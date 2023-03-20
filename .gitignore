@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.csv
+*.pdf
+*.txt
+*.png
+*.gif
+./NutrientGridData/*.csv'
