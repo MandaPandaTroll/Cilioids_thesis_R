@@ -11,4 +11,4 @@
 .DS_Store
 .Rdata
 .httr-oauth
-.DS_Store
+*.DS_Store
