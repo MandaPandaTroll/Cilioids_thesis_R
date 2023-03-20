@@ -112,43 +112,7 @@ rm(i)
  
  gc()
 }
-{
-  #
-  # {
-  # plot(predict(model1), type = "l")
-  # 
-  #  lines(sd_df$steps,predict(model), col = "blue")
-  #  
-  #  cc <- coef(model1)
-  #  Afit <- cc["myA"]
-  #  Bfit <- cc["myB"]
-  #  Cfit <- cc["myC"]
-  #  
-  #  tfine <- (0:max(sd_df$steps))
-  #  lines(tfine,sDecay(tfine,Afit,Bfit,Cfit), col = "red")
-  #  
-  #  plot(tfine,sDecay(tfine,Afit,Bfit,Cfit), type ="l", col = "red")
-  # }
-}
 
-
-gc()
-
-
-{
-  # plot(sd_df$steps, residuals(model1), main="Residuals - Single Exponential fit", xlab="steps", ylab="Residuals (predicted - observed)")
-  # abline(h=c(0.0), lty=2)
-  # 
-  # 
-  # sDecay2 <- function(steps, ampl, f1, tau1, tau2) (ampl*((f1*exp(-steps/tau1))+((1-f1)*exp(-steps/tau2))))
-  # 
-  # model2 <- nls(sdev ~ sDecay2(steps,myA,myf,myTau1,myTau2), data=sd_df, start=list(myA=2564, myf=0.1, myTau1=1000, myTau2=20000))
-  # 
-  # 
-  # summary(model2)
-  # 
-  # plot(sd_df, type = "l")
-}
 
 
 
