@@ -18,6 +18,7 @@ gc()
 
 
 
+
 # example file names in an incorrect order
 #file_names <- list.files(pattern = "gridData*")
 #file_names[order(as.numeric(str_extract(file_names, '(?<=gridData)[0-9]*')))]
@@ -35,15 +36,16 @@ gc()
   
   setwd("./NutrientGridData")
   
-  gridList<- lapply(list.files(),read.csv,header = FALSE)
-  setwd("/Users/Amanda/RstudioStuff/Cilioids_thesis_R/")
+  gridList<- lapply(lapply(list.files(),read.csv,header = FALSE),as.matrix)
+  gc()
+  setwd("~/RstudioStuff/Cilioids_thesis_R/")
   parameters <- read.csv("params.txt")
   gridDims <- list(as.character(seq(1:parameters$Value[1])),as.character(seq(1:parameters$Value[2])))
   #gridList <- (lapply(list.files(pattern = "gridData*"), read.csv, header = FALSE))
   
   
   
-  gridList <- lapply(gridList,as.matrix)
+  #gridList <- lapply(gridList,as.matrix)
   for(i in length(gridList)){
     dimnames(gridList[[i]]) <- gridDims
   }
@@ -52,16 +54,32 @@ gc()
   vlist <- lapply(gridList,as.vector)
   vsteps <- seq(from = f, to = length(vlist)*f,by = f)
  sds <- unlist(lapply(vlist,sd))
- sd_df <- data.frame(steps = vsteps, sdev = unlist(sds))
+ rm(vlist)
+ gc()
+ sd_df <- data.frame(steps = vsteps, sdev = sds)
+ 
  plot(sd_df,type = "l")
  write.csv(sd_df,"sdevs_steps_0.csv" )
+ 
 }
 {
+  
+  
+  #rm(gridList)
    sDecay <- function(t, a, b, c) (a*exp(-t/b) +c)
-   
-   
+  Decay2 = function(t,a,r)(a*(1-r)^t ) 
+  
+  plot(sd_df,type = "l") 
+  
+ 
    model <- nls(sdev ~ sDecay(steps,myA,myB, myC), data=sd_df, start=list(myA=256,myB=2.146e+03, myC = 1.382))
    
+   
+   
+   smolSD <- sd_df[2:50,]
+   plot(smolSD,type = "l")
+   model2 <- nls(sdev ~ Decay2(steps,a,r), data=smolSD, start=list(a = 256,r =0.001))
+   lines(smolSD$steps,predict(model2), col = "red")
    #summary(model)
    
 
@@ -133,31 +151,35 @@ rm(i)
   
   
   
-  
-  
-  
+{
   logDivider = function(x){
     return((1/8)*log10(x))
   }
-  logGridList <- gridList
-  for(i in 1:length(logGridList)){
-    logGridList[[i]] <- logGridList[[i]] +1
-    #logGridList[[i]] <- apply(logGridList[[i]],1,log10)
-    logGridList[[i]] <- apply(logGridList[[i]],1,logDivider)
+    logGridList <- gridList
+    rm(gridList)
+    gc()
+    for(i in 1:length(logGridList)){
+      logGridList[[i]] <- logGridList[[i]] +1
+      #logGridList[[i]] <- apply(logGridList[[i]],1,log10)
+      logGridList[[i]] <- apply(logGridList[[i]],1,logDivider)
+    }
+    
+    
+    
+    for(i in 1:length(logGridList)){
+      logGridList[[i]] <- rescale(logGridList[[i]], to = c(0,1))
+    }
+    
+    # Delete Directory
+    dir <- "./gridPics"
+    if (file.exists(dir)) {
+      unlink(dir,recursive = TRUE)
+      cat(paste0(dir,"  has been deleted"))
+    }
   }
   
   
   
-  for(i in 1:length(logGridList)){
-    logGridList[[i]] <- rescale(logGridList[[i]], to = c(0,1))
-  }
-  
-  # Delete Directory
-  dir <- "./gridPics"
-  if (file.exists(dir)) {
-    unlink(dir,recursive = TRUE)
-    cat(paste0(dir,"  has been deleted"))
-  }
   
   dir.create(dir)
   rm(dir)
@@ -175,30 +197,51 @@ rm(i)
   
   gc()
 }
-
+#library(jpeg)
+library(imager)
+library(png)
+library(magick)
 #log10
 {
   for(i in 1:length(logGridList)){
     fp <- file.path(dir_out_log10, paste0("nutrientGrid",1000+i,".png"))
-    
+    #writeJPEG(logGridList[[i]],fp,quality = 0.5)
     writePNG(logGridList[[i]], fp, dpi = 32)
    
   }
-  
+  #rm(logGridList)
+  gc()
   
   ## list file names and read in
   imgs <- list.files(dir_out_log10, full.names = TRUE)
-  img_list <- lapply(imgs, image_read)
   
+  img_list <- lapply(imgs, image_read)
+  gc()
   ## join the images together
   img_joined <- image_join(img_list)
-  
+  gc()
+ 
   ## animate 
-  img_animated <- image_animate(img_joined, fps = 10)
+  img_animated <- image_animate(img_joined, fps = 20)
+  gc()
   img_animated <- image_rotate(img_animated, 270) 
-  ## view animated image
+  gc()
   
+  save.video(imgs,"testyeah.mp4")
   
+  make.video(
+    dname ="/gridPics/log10",
+    fname = "owoee.mp4",
+    pattern= "*.png",
+    verbose = TRUE,
+    extra.args =  "-pattern_type glob \ -c:v libx264 -pix_fmt yuv420p out.mp4",
+    fps = 30
+    
+  )
+  #ffmpeg -framerate 30 -pattern_type glob -i ‘*.jpeg’ \
+  #-c:v libx264 -pix_fmt yuv420p out.mp4
+  owo <- make.video(imgs,"owo.mp4")
+ 
   ## save to disk
   image_write(image = img_animated,
               path = "gridPics/gifs/log10.gif")
@@ -206,6 +249,7 @@ rm(i)
 }
 img_animated
 rm(img_list)
+gc()
 rm(img_joined)
 
 
@@ -226,9 +270,10 @@ rm(img_joined)
   
   ## join the images together
   img_joined <- image_join(img_list)
-  
+  gc()
   ## animate at 2 frames per second
   img_animated <- image_animate(img_joined, fps = 20)
+  gc()
   img_animated <- image_rotate(img_animated, 270) 
   
   
@@ -236,6 +281,7 @@ rm(img_joined)
   ## save to disk
   image_write(image = img_animated,
               path = "gridPics/gifs/scaled.gif")
+  gc()
 }
 ## view animated image
 img_animated
