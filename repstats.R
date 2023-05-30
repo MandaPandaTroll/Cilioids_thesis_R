@@ -6,7 +6,14 @@ gc()
 dev.off()
 
 
+
+
+
+setwd(r"(C:/Users/gushanamc/RstudioStuff/Cilioids_thesis_R)")
 repStats <- read.csv("./RepData/repStat0.csv")
+
+parameters <- read.csv("params.txt")
+parameters <- spread(parameters, key = Parameter, value = Value)
 
 inds <- repStats%>%distinct(individualNumber, .keep_all = T)
 
@@ -84,3 +91,10 @@ plotdist(gamsNotZero)
 descdist(gamsNotZero, discrete =T, boot = 256)
 
 llplot(nbinomfit)
+
+
+
+
+c(0,1,2,3)
+c(0,1,2,3,4)
+
